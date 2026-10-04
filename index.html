@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LogiSahl</title>
+<meta name="description" content="LogiSahl Print: warehouse barcode and label printing from Excel or Google Sheets to any Windows printer. Free, works offline, with a built-in assistant.">
+<meta property="og:title" content="LogiSahl">
+<meta property="og:description" content="Barcode and label printing for warehouses, from Excel to any Windows printer. Free and offline.">
+<meta property="og:type" content="website">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --text: #16181d; --text-2: #4b5160; --text-3: #7a8191; --line: #e3e6ec;
+    --brand: #1f5eff; --brand-2: #0f3fc4; --brand-soft: #e9efff; --ok: #1f8a4c; --ok-soft: #e6f6ec; --warn-soft: #fff4e0; --warn-text: #7a4100;
+    --radius: 14px; --shadow: 0 10px 30px rgba(20, 30, 60, 0.08);
+    --font-ar: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif; --font-en: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-ar); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  html[lang="en"] body { font-family: var(--font-en); }
+  a { color: var(--brand); text-decoration: none; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  .ltr { direction: ltr; unicode-bidi: isolate; }
+
+  header { position: sticky; top: 0; z-index: 10; background: rgba(246, 247, 249, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--text); }
+  .brand .mark { width: 34px; height: 34px; border-radius: 9px; background: var(--text); display: grid; place-items: center; }
+  .brand .mark svg { width: 20px; height: 20px; }
+  .brand span b { color: var(--brand); }
+  .nav-links { display: flex; align-items: center; gap: 18px; font-size: 14px; color: var(--text-2); }
+  .nav-links a { color: var(--text-2); }
+  .nav-links a:hover { color: var(--text); }
+  .lang { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; color: var(--text); }
+  .lang:hover { border-color: var(--text-3); }
+
+  .hero { padding: 72px 0 48px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 6px; background: var(--brand-soft); color: var(--brand-2); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 600; }
+  .eyebrow .ltr { font-family: var(--font-en); font-weight: 700; }
+  h1 { font-size: clamp(32px, 4.6vw, 50px); line-height: 1.2; margin: 18px 0 14px; letter-spacing: -0.01em; }
+  .lead { font-size: 18px; color: var(--text-2); margin: 0 0 28px; max-width: 540px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; border-radius: 12px; padding: 14px 22px; font-weight: 600; font-size: 16px; border: 1px solid transparent; cursor: pointer; transition: transform 0.08s ease, box-shadow 0.2s ease; }
+  .btn.primary { background: var(--brand); color: #fff; box-shadow: 0 8px 22px rgba(31, 94, 255, 0.28); }
+  .btn.primary:hover { background: var(--brand-2); transform: translateY(-1px); }
+  .btn.ghost { background: var(--panel); color: var(--text); border-color: var(--line); }
+  .btn.ghost:hover { border-color: var(--text-3); }
+  .btn svg { width: 18px; height: 18px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 16px; font-size: 14px; color: var(--text-3); }
+  .meta b { color: var(--text-2); font-weight: 600; }
+  .counter { display: inline-flex; align-items: center; gap: 6px; }
+  .counter .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+
+  .mock { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; direction: ltr; }
+  .mock .bar { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+  .mock .bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); display: block; }
+  .mock .bar i:first-child { background: #f87171; } .mock .bar i:nth-child(2) { background: #fbbf24; } .mock .bar i:nth-child(3) { background: #34d399; }
+  .mock .grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 14px; }
+  .sheet { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; font-size: 11px; font-family: var(--font-en); }
+  .sheet div { display: grid; grid-template-columns: 1.1fr 1.6fr 0.8fr; }
+  .sheet div span { padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sheet div:first-child span { background: #f1f3f7; font-weight: 600; color: var(--text-2); }
+  .sheet div.on span { background: var(--brand-soft); }
+  .label { border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: #fff; display: flex; flex-direction: column; gap: 8px; justify-content: space-between; }
+  .label .name { font-weight: 700; font-size: 15px; font-family: var(--font-ar); }
+  .label .sub { font-size: 11px; color: var(--text-3); font-family: var(--font-en); }
+  .label .price { font-weight: 700; font-size: 18px; font-family: var(--font-en); }
+  .label .code { font-size: 10px; letter-spacing: 0.08em; text-align: center; color: var(--text-2); font-family: var(--font-en); margin-top: 2px; }
+  .label .bars { height: 42px; display: flex; align-items: stretch; gap: 1.5px; }
+  .label .bars i { display: block; background: var(--text); }
+
+  section { padding: 56px 0; }
+  section h2 { font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  section .sub { color: var(--text-2); margin: 0 0 28px; font-size: 16px; max-width: 640px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  .card .ic { width: 40px; height: 40px; border-radius: 10px; background: var(--brand-soft); color: var(--brand-2); display: grid; place-items: center; margin-bottom: 14px; }
+  .card .ic svg { width: 20px; height: 20px; }
+  .card h3 { margin: 0 0 6px; font-size: 17px; }
+  .card p { margin: 0; color: var(--text-2); font-size: 14.5px; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: step; }
+  .step { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; position: relative; }
+  .step::before { counter-increment: step; content: counter(step); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--text); color: #fff; font-weight: 700; font-size: 14px; margin-bottom: 12px; font-family: var(--font-en); }
+  .step h3 { margin: 0 0 6px; font-size: 16px; }
+  .step p { margin: 0; color: var(--text-2); font-size: 14.5px; }
+
+  .privacy { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: start; }
+  .privacy .ic { width: 44px; height: 44px; border-radius: 12px; background: var(--ok-soft); color: var(--ok); display: grid; place-items: center; }
+  .privacy .ic svg { width: 22px; height: 22px; }
+  .privacy h3 { margin: 0 0 6px; }
+  .privacy p { margin: 0; color: var(--text-2); }
+
+  .download-box { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; }
+  .download-box .ver { font-size: 14px; color: var(--text-3); margin-top: 6px; }
+  .note { background: var(--warn-soft); color: var(--warn-text); border-radius: 12px; padding: 14px 16px; font-size: 14px; margin-top: 16px; }
+  .note b { font-weight: 700; }
+  .releases { margin-top: 18px; font-size: 14px; color: var(--text-2); display: grid; gap: 6px; }
+  .releases a { font-family: var(--font-en); }
+  .releases span.n { color: var(--text-3); }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 44px; color: var(--text-2); font-size: 14px; }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: center; }
+  .contact { display: flex; gap: 10px; }
+  .contact a { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 8px 12px; color: var(--text); }
+  .contact a:hover { border-color: var(--text-3); }
+  .contact svg { width: 15px; height: 15px; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; padding-top: 44px; }
+    .cards, .steps { grid-template-columns: 1fr; }
+    .download-box { grid-template-columns: 1fr; }
+    .nav-links a.hide-sm { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M5 5v14M8 5v14M11.5 5v14M15 5v14M19 5v14"/></svg></span>
+      <span>Logi<b>Sahl</b></span>
+    </a>
+    <nav class="nav-links">
+      <a class="hide-sm" href="#features" data-i18n="nav.features">المميزات</a>
+      <a class="hide-sm" href="#how" data-i18n="nav.how">كيف يعمل</a>
+      <a href="#download" data-i18n="nav.download">التحميل</a>
+      <button class="lang" id="lang" type="button">English</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div>
+      <span class="eyebrow"><span class="ltr">LogiSahl Print</span> · <span data-i18n="hero.eyebrow">مجاني · يعمل بدون إنترنت · ويندوز 10 و11</span></span>
+      <h1 data-i18n="hero.title">اطبع ملصقات وباركودات المستودع من Excel خلال دقائق</h1>
+      <p class="lead" data-i18n="hero.lead">LogiSahl Print يقرأ بياناتك من Excel أو Google Sheets، يصمّم الملصق معك، ويطبعه على أي طابعة ويندوز: طابعات الملصقات الحرارية أو الطابعات المكتبية.</p>
+      <div class="cta">
+        <a class="btn primary" id="dl" href="#download">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          <span data-i18n="hero.cta">تحميل لويندوز</span>
+        </a>
+        <a class="btn ghost" href="#features" data-i18n="hero.more">تعرّف على المميزات</a>
+      </div>
+      <div class="meta">
+        <span><b id="ver">—</b> <span data-i18n="meta.version">الإصدار</span></span>
+        <span><b id="size">—</b></span>
+        <span class="counter"><i class="dot"></i><b id="count">—</b> <span data-i18n="meta.downloads">تحميل</span></span>
+      </div>
+    </div>
+
+    <div class="mock" aria-hidden="true">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <div class="grid">
+        <div class="sheet">
+          <div><span>SKU</span><span>Item</span><span>Price</span></div>
+          <div class="on"><span>ITM-10001</span><span>الواحة كرتون 24</span><span>42.00</span></div>
+          <div><span>ITM-10002</span><span>عصير برتقال 1 لتر</span><span>6.50</span></div>
+          <div><span>ITM-10003</span><span>أرز بسمتي 5 كغ</span><span>38.75</span></div>
+          <div><span>ITM-10004</span><span>زيت زيتون 750 مل</span><span>29.00</span></div>
+          <div><span>ITM-10005</span><span>حليب طويل الأمد</span><span>5.25</span></div>
+        </div>
+        <div class="label">
+          <div>
+            <div class="name">الواحة كرتون 24 حبة</div>
+            <div class="sub">ITM-10001 · 2026-10-03</div>
+          </div>
+          <div class="price">42.00 SAR</div>
+          <div>
+            <div class="bars" id="bars"></div>
+            <div class="code">6281000000014</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <h2 data-i18n="features.title">كل ما يحتاجه المستودع، بدون تعقيد</h2>
+      <p class="sub" data-i18n="features.sub">صُمّم ليستخدمه موظف المستودع مباشرة: استورد الجدول، اختر التصميم، اطبع.</p>
+      <div class="cards">
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg></div>
+          <h3 data-i18n="f1.t">من Excel وGoogle Sheets</h3>
+          <p data-i18n="f1.d">استيراد ملفات xlsx وcsv أو لصق الصفوف مباشرة. الأعمدة تُكتشف تلقائياً: الكود، الاسم، السعر، تاريخ الانتهاء.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg></div>
+          <h3 data-i18n="f2.t">أي طابعة ويندوز</h3>
+          <p data-i18n="f2.d">طابعات الملصقات الحرارية (Zebra وغيرها) والطابعات المكتبية. يقترح الطابعة المناسبة ويتذكرها لكل تصميم.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M21 5v14"/></svg></div>
+          <h3 data-i18n="f3.t">باركود وQR صحيحان</h3>
+          <p data-i18n="f3.d">Code 128 وEAN-13 وQR وغيرها، مع فحص مسبق يحذّرك قبل الطباعة إذا كان الباركود أصغر من أن يُقرأ.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></div>
+          <h3 data-i18n="f4.t">مكتبة تصاميمك</h3>
+          <p data-i18n="f4.d">احفظ تصميم ملصق المنتج، وبوليصة الشحن، وملصق الرف، وارجع لكل واحد ببياناته وطابعته.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8zM5 15l.6 1.6L7 17l-1.4.6L5 19l-.6-1.4L3 17l1.4-.4z"/></svg></div>
+          <h3 data-i18n="f5.t">مساعد يفهم طلبك</h3>
+          <p data-i18n="f5.d">اكتب «ملصق فيه الاسم والسعر والباركود» بأي لهجة. مساعد مدمج يعمل على جهازك، وبإمكانك ربط موديلك الخاص.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v6l4 2"/></svg></div>
+          <h3 data-i18n="f6.t">طباعة بالجملة تحت سيطرتك</h3>
+          <p data-i18n="f6.d">آلاف الملصقات على دفعات، مع إيقاف مؤقت وإيقاف فوري من داخل البرنامج، وسجل لما طُبع.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <h2 data-i18n="how.title">ثلاث خطوات</h2>
+      <p class="sub" data-i18n="how.sub">من الجدول إلى الطابعة بدون إعدادات معقدة.</p>
+      <div class="steps">
+        <div class="step"><h3 data-i18n="s1.t">استورد بياناتك</h3><p data-i18n="s1.d">افتح ملف Excel أو الصق الصفوف. يتعرف البرنامج على الأعمدة ويتحقق من الأكواد.</p></div>
+        <div class="step"><h3 data-i18n="s2.t">صمّم الملصق</h3><p data-i18n="s2.d">اختر مقاس الملصق، واسحب الحقول، أو اطلب من المساعد يجهّزه لك.</p></div>
+        <div class="step"><h3 data-i18n="s3.t">اطبع</h3><p data-i18n="s3.d">اختر الصفوف وعدد النسخ، واطبع على الطابعة المقترحة أو أي طابعة أخرى.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="privacy">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <div>
+          <h3 data-i18n="privacy.t">بياناتك تبقى على جهازك</h3>
+          <p data-i18n="privacy.d">لا حساب، ولا اشتراك، ولا رفع للبيانات. البرنامج والمساعد يعملان بدون إنترنت بعد التثبيت. ربط موديل خارجي اختيار يرجع لك ولمفتاحك أنت.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="download">
+    <div class="wrap">
+      <h2 data-i18n="dl.title">التحميل</h2>
+      <p class="sub" data-i18n="dl.sub">ملف تثبيت واحد لويندوز 10 و11 (64 بت). يثبّت لحساب المستخدم ولا يحتاج صلاحيات مدير.</p>
+      <div class="download-box">
+        <div>
+          <div style="font-weight:700;font-size:18px">LogiSahl Print <span class="ltr" id="ver2"></span></div>
+          <div class="ver"><span id="size2"></span> <span id="date"></span></div>
+          <div class="note"><b data-i18n="dl.noteT">ملاحظة عند أول تشغيل:</b> <span data-i18n="dl.noteD">قد يعرض ويندوز تحذير SmartScreen لأن الملف جديد وغير موقّع رقمياً بعد. اضغط «More info» ثم «Run anyway».</span></div>
+          <div class="releases" id="releases"></div>
+        </div>
+        <a class="btn primary" id="dl2" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          <span data-i18n="hero.cta">تحميل لويندوز</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <div><span data-i18n="foot.made">صنعه</span> <b>Islam Alhaj</b> · © 2026 LogiSahl</div>
+    </div>
+    <div class="contact">
+      <a href="https://www.linkedin.com/in/islam-al-haj-cssgb-647988177" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+        LinkedIn
+      </a>
+      <a href="https://wa.me/966545355801" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.91-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.05 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.9-9.88a9.82 9.82 0 0 1 7 2.9 9.82 9.82 0 0 1 2.9 7c0 5.45-4.44 9.88-9.89 9.88zm8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.33.16 11.89c0 2.1.55 4.14 1.59 5.95L0 24l6.3-1.65a11.88 11.88 0 0 0 5.74 1.46h.01c6.55 0 11.89-5.33 11.89-11.89 0-3.18-1.24-6.16-3.48-8.41z"/></svg>
+        WhatsApp
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ---- where the installers live: the GitHub repository that holds the releases ---- */
+  const OWNER = 'logisahl';
+  const REPO = 'logisahl-print';
+
+  const T = {
+    en: {
+      'nav.features': 'Features', 'nav.how': 'How it works', 'nav.download': 'Download',
+      'hero.eyebrow': 'Free · Works offline · Windows 10 and 11',
+      'hero.title': 'Print warehouse labels and barcodes from Excel in minutes',
+      'hero.lead': 'LogiSahl Print reads your data from Excel or Google Sheets, designs the label with you, and prints it on any Windows printer: thermal label printers or office printers.',
+      'hero.cta': 'Download for Windows', 'hero.more': 'See the features',
+      'meta.version': 'version', 'meta.downloads': 'downloads',
+      'features.title': 'Everything a warehouse needs, without the complexity',
+      'features.sub': 'Built for the warehouse clerk to use directly: import the sheet, pick the design, print.',
+      'f1.t': 'From Excel and Google Sheets', 'f1.d': 'Import xlsx and csv files or paste rows directly. Columns are detected automatically: code, name, price, expiry date.',
+      'f2.t': 'Any Windows printer', 'f2.d': 'Thermal label printers (Zebra and others) and office printers. It suggests the right printer and remembers it per design.',
+      'f3.t': 'Barcodes and QR that scan', 'f3.d': 'Code 128, EAN-13, QR and more, with a preflight check that warns before printing when a barcode is too small to read.',
+      'f4.t': 'Your design library', 'f4.d': 'Save the product label, the shipping label and the shelf label, and return to each with its data and printer.',
+      'f5.t': 'An assistant that understands you', 'f5.d': 'Type "a label with name, price and barcode" in any dialect. A built-in assistant runs on your PC, and you can connect your own model.',
+      'f6.t': 'Bulk printing under your control', 'f6.d': 'Thousands of labels in batches, with pause and instant stop from inside the app, and a record of what was printed.',
+      'how.title': 'Three steps', 'how.sub': 'From the sheet to the printer, without complicated setup.',
+      's1.t': 'Import your data', 's1.d': 'Open an Excel file or paste rows. The app recognises the columns and validates the codes.',
+      's2.t': 'Design the label', 's2.d': 'Choose the label size, drag the fields, or ask the assistant to prepare it for you.',
+      's3.t': 'Print', 's3.d': 'Pick the rows and the number of copies, and print on the suggested printer or any other.',
+      'privacy.t': 'Your data stays on your computer',
+      'privacy.d': 'No account, no subscription, no uploads. The app and the assistant work offline after installation. Connecting an external model is your choice, with your own key.',
+      'dl.title': 'Download', 'dl.sub': 'One installer for Windows 10 and 11 (64-bit). It installs for the current user and needs no administrator rights.',
+      'dl.noteT': 'On first launch:', 'dl.noteD': 'Windows may show a SmartScreen warning because the file is new and not yet digitally signed. Click "More info", then "Run anyway".',
+      'foot.made': 'Made by', 'rel.latest': 'latest', 'rel.older': 'Previous versions:',
+    },
+    ar: {
+      'rel.latest': 'الأحدث', 'rel.older': 'إصدارات سابقة:',
+    },
+  };
+  const AR = {};
+  document.querySelectorAll('[data-i18n]').forEach((el) => { AR[el.dataset.i18n] = el.textContent; });
+  Object.assign(T.ar, AR);
+  let lang = 'ar';
+  try { lang = localStorage.getItem('logisahl.site.lang') || (navigator.language.startsWith('ar') ? 'ar' : 'en'); } catch {}
+  const t = (k) => (T[lang] && T[lang][k]) || T.en[k] || k;
+  function apply() {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    document.getElementById('lang').textContent = lang === 'ar' ? 'English' : 'العربية';
+    renderReleases();
+  }
+  document.getElementById('lang').addEventListener('click', () => {
+    lang = lang === 'ar' ? 'en' : 'ar';
+    try { localStorage.setItem('logisahl.site.lang', lang); } catch {}
+    apply();
+  });
+
+  /* ---- the latest installer and the download count, read from GitHub ---- */
+  const fmtSize = (b) => `${(b / 1024 / 1024).toFixed(1)} MB`;
+  let releases = [];
+  function renderReleases() {
+    const box = document.getElementById('releases');
+    const list = releases.filter((r) => r.asset).slice(1, 4);
+    box.innerHTML = list.length ? `<span class="n">${t('rel.older')}</span>` + list.map((r) => `<span><a href="${r.asset.browser_download_url}">${r.tag_name}</a> <span class="n ltr">· ${fmtSize(r.asset.size)} · ${r.asset.download_count}</span></span>`).join('') : '';
+  }
+  async function load() {
+    try {
+      const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/releases?per_page=10`, { headers: { Accept: 'application/vnd.github+json' } });
+      if (!res.ok) return;
+      const all = await res.json();
+      releases = all.filter((r) => !r.draft && !r.prerelease).map((r) => ({ ...r, asset: (r.assets || []).find((a) => /\.exe$/i.test(a.name)) }));
+      const latest = releases.find((r) => r.asset);
+      if (!latest) return;
+      const total = releases.reduce((n, r) => n + (r.asset ? r.asset.download_count : 0), 0);
+      for (const id of ['dl', 'dl2']) document.getElementById(id).href = latest.asset.browser_download_url;
+      document.getElementById('ver').textContent = latest.tag_name.replace(/^v/, '');
+      document.getElementById('ver2').textContent = latest.tag_name.replace(/^v/, '');
+      document.getElementById('size').textContent = fmtSize(latest.asset.size);
+      document.getElementById('size2').textContent = fmtSize(latest.asset.size);
+      document.getElementById('date').textContent = new Date(latest.published_at).toLocaleDateString(lang === 'ar' ? 'ar-SA-u-nu-latn' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('count').textContent = total.toLocaleString('en-US');
+      renderReleases();
+    } catch { /* the page still works without the live numbers */ }
+  }
+
+  /* a decorative barcode for the mock label */
+  const bars = document.getElementById('bars');
+  let seed = 7;
+  for (let i = 0; i < 46; i++) { seed = (seed * 9301 + 49297) % 233280; const w = 1 + (seed % 3); bars.insertAdjacentHTML('beforeend', `<i style="width:${w}px;margin-right:${(seed >> 3) % 2}px"></i>`); }
+
+  apply();
+  load();
+</script>
+</body>
+</html>
