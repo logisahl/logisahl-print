@@ -100,9 +100,6 @@
   .download-box .ver { font-size: 14px; color: var(--text-3); margin-top: 6px; }
   .note { background: var(--warn-soft); color: var(--warn-text); border-radius: 12px; padding: 14px 16px; font-size: 14px; margin-top: 16px; }
   .note b { font-weight: 700; }
-  .releases { margin-top: 18px; font-size: 14px; color: var(--text-2); display: grid; gap: 6px; }
-  .releases a { font-family: var(--font-en); }
-  .releases span.n { color: var(--text-3); }
 
   footer { border-top: 1px solid var(--line); padding: 32px 0 44px; color: var(--text-2); font-size: 14px; }
   .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: center; }
@@ -253,7 +250,6 @@
           <div style="font-weight:700;font-size:18px">LogiSahl Print <span class="ltr" id="ver2"></span></div>
           <div class="ver"><span id="size2"></span> <span id="date"></span></div>
           <div class="note"><b data-i18n="dl.noteT">ملاحظة عند أول تشغيل:</b> <span data-i18n="dl.noteD">قد يعرض ويندوز تحذير SmartScreen لأن الملف جديد وغير موقّع رقمياً بعد. اضغط «More info» ثم «Run anyway».</span></div>
-          <div class="releases" id="releases"></div>
         </div>
         <a class="btn primary" id="dl2" href="#">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
@@ -311,10 +307,10 @@
       'privacy.d': 'No account, no subscription, no uploads. The app and the assistant work offline after installation. Connecting an external model is your choice, with your own key.',
       'dl.title': 'Download', 'dl.sub': 'One installer for Windows 10 and 11 (64-bit). It installs for the current user and needs no administrator rights.',
       'dl.noteT': 'On first launch:', 'dl.noteD': 'Windows may show a SmartScreen warning because the file is new and not yet digitally signed. Click "More info", then "Run anyway".',
-      'foot.made': 'Made by', 'rel.latest': 'latest', 'rel.older': 'Previous versions:',
+      'foot.made': 'Made by', 'rel.latest': 'latest',
     },
     ar: {
-      'rel.latest': 'الأحدث', 'rel.older': 'إصدارات سابقة:',
+      'rel.latest': 'الأحدث',
     },
   };
   const AR = {};
@@ -328,7 +324,6 @@
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
     document.getElementById('lang').textContent = lang === 'ar' ? 'English' : 'العربية';
-    renderReleases();
   }
   document.getElementById('lang').addEventListener('click', () => {
     lang = lang === 'ar' ? 'en' : 'ar';
@@ -338,18 +333,12 @@
 
   /* ---- the latest installer and the download count, read from GitHub ---- */
   const fmtSize = (b) => `${(b / 1024 / 1024).toFixed(1)} MB`;
-  let releases = [];
-  function renderReleases() {
-    const box = document.getElementById('releases');
-    const list = releases.filter((r) => r.asset).slice(1, 4);
-    box.innerHTML = list.length ? `<span class="n">${t('rel.older')}</span>` + list.map((r) => `<span><a href="${r.asset.browser_download_url}">${r.tag_name}</a> <span class="n ltr">· ${fmtSize(r.asset.size)} · ${r.asset.download_count}</span></span>`).join('') : '';
-  }
   async function load() {
     try {
       const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/releases?per_page=10`, { headers: { Accept: 'application/vnd.github+json' } });
       if (!res.ok) return;
       const all = await res.json();
-      releases = all.filter((r) => !r.draft && !r.prerelease).map((r) => ({ ...r, asset: (r.assets || []).find((a) => /\.exe$/i.test(a.name)) }));
+      const releases = all.filter((r) => !r.draft && !r.prerelease).map((r) => ({ ...r, asset: (r.assets || []).find((a) => /\.exe$/i.test(a.name)) }));
       const latest = releases.find((r) => r.asset);
       if (!latest) return;
       const total = releases.reduce((n, r) => n + (r.asset ? r.asset.download_count : 0), 0);
@@ -360,7 +349,6 @@
       document.getElementById('size2').textContent = fmtSize(latest.asset.size);
       document.getElementById('date').textContent = new Date(latest.published_at).toLocaleDateString(lang === 'ar' ? 'ar-SA-u-nu-latn' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
       document.getElementById('count').textContent = total.toLocaleString('en-US');
-      renderReleases();
     } catch { /* the page still works without the live numbers */ }
   }
 
