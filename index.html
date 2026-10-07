@@ -116,6 +116,91 @@
     .download-box { grid-template-columns: 1fr; }
     .nav-links a.hide-sm { display: none; }
   }
+  /* ---- see it at work: four tabs and one 16:9 player ---- */
+  .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+  .tour { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr); gap: 20px; align-items: start; }
+  .tour-tabs { display: grid; grid-auto-rows: auto; gap: 6px; align-self: start; }
+  .tour-tab { position: relative; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; align-items: baseline; align-content: center; width: 100%; margin: 0; padding: 13px 16px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--text-2); font: inherit; text-align: start; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; }
+  .tour-tab[aria-selected="false"]:hover { background: #eef0f4; }
+  .tour-tab[aria-selected="true"] { background: var(--panel); border-color: var(--line); box-shadow: 0 6px 18px rgba(20, 30, 60, 0.06); }
+  .tour-tab:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .tour-num { grid-row: span 2; font-family: var(--font-en); font-size: 12px; font-weight: 600; color: #5f6676; font-variant-numeric: tabular-nums; }
+  .tour-tab[aria-selected="true"] .tour-num { color: var(--brand); }
+  .tour-tt { font-size: 15.5px; font-weight: 600; line-height: 1.4; color: var(--text-2); }
+  .tour-tab[aria-selected="true"] .tour-tt { color: var(--text); }
+  .tour-td { margin-top: 4px; font-size: 13.5px; line-height: 1.55; color: var(--text-2); }
+  .tour-track { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--line); visibility: hidden; }
+  .tour-tab[aria-selected="true"] .tour-track { visibility: visible; }
+  .tour-track i { display: block; height: 100%; background: var(--brand); transform: scaleX(0); transform-origin: 0 50%; }
+  html[dir="rtl"] .tour-track i { transform-origin: 100% 50%; }
+
+  .tour-main { min-width: 0; }
+  /* the clips are English, left-to-right content: the player box never mirrors */
+  .tour-stage { position: relative; aspect-ratio: 16 / 9; direction: ltr; overflow: hidden; isolation: isolate; background: #eef0f5; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); touch-action: manipulation; }
+  @supports not (aspect-ratio: 16 / 9) {
+    .tour-stage::before { content: ""; display: block; padding-top: 56.25%; }
+  }
+  .tour-panel { position: absolute; top: 0; right: 0; bottom: 0; left: 0; border-radius: inherit; }
+  .tour-panel[hidden] { display: none; }
+  .tour-panel:focus { outline: none; }
+  .tour-panel:focus-visible::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 1; border: 3px solid var(--brand); border-radius: inherit; pointer-events: none; }
+  .tour-panel video { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; background: #eef0f5; cursor: pointer; }
+  /* one control in the corner, clear of the captions burned in at the bottom centre: a blue "play 0:19" pill, or a dark round pause button while playing */
+  .tour-play { position: absolute; right: 12px; bottom: 12px; z-index: 2; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 38px; height: 38px; padding: 0 14px 0 12px; border: 0; border-radius: 999px; background: var(--brand); box-shadow: 0 6px 16px rgba(31, 94, 255, 0.3); color: #fff; font: 600 13px/1 var(--font-en); font-variant-numeric: tabular-nums; white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 0.15s ease; }
+  .tour-play[hidden], .tour-sound[hidden] { display: none; }
+  .tour-sound { position: absolute; left: 12px; bottom: 12px; z-index: 2; display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 999px; background: rgba(15, 26, 54, 0.78); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16); color: #fff; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 0.15s ease; }
+  .tour-sound:hover { background: rgba(15, 26, 54, 0.94); }
+  .tour-sound[aria-pressed="true"] { background: var(--brand); box-shadow: 0 6px 16px rgba(31, 94, 255, 0.3); }
+  .tour-sound:focus-visible { outline: 2px solid transparent; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--brand); }
+  .tour-sound svg { width: 17px; height: 17px; }
+  .tour-sound[aria-pressed="true"] .i-mute, .tour-sound[aria-pressed="false"] .i-sound { display: none; }
+  .tour-play:hover { background: var(--brand-2); }
+  .tour-play[data-state="pause"] { width: 38px; padding: 0; background: rgba(15, 26, 54, 0.78); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16); }
+  .tour-play[data-state="pause"]:hover { background: rgba(15, 26, 54, 0.94); }
+  .tour-play:focus-visible { outline: 2px solid transparent; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--brand); }
+  .tour-play svg { flex: none; width: 16px; height: 16px; }
+  .tour-play[data-state="play"] .i-pause, .tour-play[data-state="pause"] .i-play, .tour-play[data-state="pause"] .tour-time { display: none; }
+
+  /* under the player: the honest note on desktop; the description and the note on smaller screens. All four share one cell, so the height never jumps. */
+  .tour-caps { display: grid; margin-top: 12px; }
+  .tour-cap { grid-area: 1 / 1; visibility: hidden; }
+  .tour-cap.on { visibility: visible; }
+  .tour-cap p { margin: 0; }
+  .tour-cap-d { display: none; font-size: 14.5px; color: var(--text-2); }
+  .tour-cap-n { font-size: 13px; line-height: 1.55; color: #5f6676; }
+
+  @media (max-width: 999px) {
+    .tour { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    .tour-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: #eceef2; border-radius: 12px; }
+    .tour-tab { flex: 1 1 30%; min-width: 0; }
+    .tour-tab { column-gap: 8px; align-content: start; padding: 10px 12px 12px; border-radius: 9px; }
+    .tour-tab[aria-selected="false"]:hover { background: rgba(255, 255, 255, 0.55); }
+    .tour-tab[aria-selected="true"] { box-shadow: 0 1px 3px rgba(20, 30, 60, 0.12); }
+    .tour-tab:focus-visible { outline-offset: -2px; }
+    .tour-num { grid-row: auto; }
+    .tour-tt { font-size: 14px; }
+    .tour-td { display: none; }
+    .tour-cap-d { display: block; }
+    .tour-cap-n { margin-top: 4px; }
+  }
+  .tour.is-tall .tour-stage { aspect-ratio: 4 / 5; }
+  @supports not (aspect-ratio: 16 / 9) {
+    .tour.is-tall .tour-stage::before { padding-top: 125%; }
+  }
+  @media (max-width: 600px) {
+    .tour-tab { flex-basis: 45%; }
+    .tour-play { right: 8px; bottom: 8px; height: 36px; min-width: 36px; padding: 0 12px 0 10px; }
+    .tour-sound { left: 8px; bottom: 8px; width: 36px; height: 36px; }
+    .tour-play[data-state="pause"] { width: 36px; padding: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tour-tab, .tour-play, .tour-sound { transition: none; }
+  }
+  @media (forced-colors: active) {
+    .tour-tab[aria-selected="true"] { border-color: Highlight; }
+    .tour-track i { background: Highlight; }
+    .tour-play, .tour-sound { border: 1px solid ButtonText; }
+  }
 </style>
 </head>
 <body>
@@ -127,6 +212,7 @@
     </a>
     <nav class="nav-links">
       <a class="hide-sm" href="#features" data-i18n="nav.features">المميزات</a>
+      <a class="hide-sm" href="#videos" data-i18n="nav.videos">مقاطع الفيديو</a>
       <a class="hide-sm" href="#how" data-i18n="nav.how">كيف يعمل</a>
       <a href="#download" data-i18n="nav.download">التحميل</a>
       <button class="lang" id="lang" type="button">English</button>
@@ -214,6 +300,106 @@
           <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v6l4 2"/></svg></div>
           <h3 data-i18n="f6.t">طباعة بالجملة تحت سيطرتك</h3>
           <p data-i18n="f6.d">آلاف الملصقات على دفعات، مع إيقاف مؤقت وإيقاف فوري من داخل البرنامج، وسجل لما طُبع.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="videos">
+    <div class="wrap">
+      <h2 id="tour-h" data-i18n="tour.title">شاهد البرنامج أثناء العمل</h2>
+      <p class="sub" data-i18n="tour.sub">خمسة مقاطع قصيرة بموسيقى هادئة، من ملف Excel إلى الملصق المطبوع. الصوت مغلق حتى تشغّله.</p>
+      <div class="tour" id="tour-box">
+        <div class="tour-tabs" role="tablist" aria-labelledby="tour-h" aria-orientation="vertical">
+          <button class="tour-tab" type="button" role="tab" id="tour-tab-excel" aria-controls="tour-panel-excel" aria-selected="true" aria-labelledby="tour-tt-excel" aria-describedby="tour-td-excel">
+            <span class="tour-num" aria-hidden="true">01</span>
+            <span class="tour-tt" id="tour-tt-excel" data-i18n="tour.excel.t">من Excel إلى الملصقات</span>
+            <span class="tour-td" id="tour-td-excel" data-i18n="tour.excel.d">كل صف في الملف يملأ ملصقاً، ونافذة الطباعة تفحص المهمة قبل أن تبدأ، مع إيقاف مؤقت أو تام أثناءها.</span>
+            <span class="tour-track" aria-hidden="true"><i></i></span>
+          </button>
+          <button class="tour-tab" type="button" role="tab" id="tour-tab-ai" aria-controls="tour-panel-ai" aria-selected="false" tabindex="-1" aria-labelledby="tour-tt-ai" aria-describedby="tour-td-ai">
+            <span class="tour-num" aria-hidden="true">02</span>
+            <span class="tour-tt" id="tour-tt-ai" data-i18n="tour.ai.t">التصميم بالذكاء الاصطناعي</span>
+            <span class="tour-td" id="tour-td-ai" data-i18n="tour.ai.d">صِف الملصق بجملة واحدة، فيصمّمه ذكاء اصطناعي يعمل على جهازك ويربطه بأعمدة Excel.</span>
+            <span class="tour-track" aria-hidden="true"><i></i></span>
+          </button>
+          <button class="tour-tab" type="button" role="tab" id="tour-tab-assistant" aria-controls="tour-panel-assistant" aria-selected="false" tabindex="-1" aria-labelledby="tour-tt-assistant" aria-describedby="tour-td-assistant">
+            <span class="tour-num" aria-hidden="true">03</span>
+            <span class="tour-tt" id="tour-tt-assistant" data-i18n="tour.assistant.t">المساعد الذكي</span>
+            <span class="tour-td" id="tour-td-assistant" data-i18n="tour.assistant.d">اطلب بكلمات عادية: يعيد ترتيب الملصق، ويجيب من بيانات المهمة، ويجهّز الطباعة. ويمكنك ربط نموذج ذكاء اصطناعي خاص بك.</span>
+            <span class="tour-track" aria-hidden="true"><i></i></span>
+          </button>
+          <button class="tour-tab" type="button" role="tab" id="tour-tab-smart" aria-controls="tour-panel-smart" aria-selected="false" tabindex="-1" aria-labelledby="tour-tt-smart" aria-describedby="tour-td-smart">
+            <span class="tour-num" aria-hidden="true">04</span>
+            <span class="tour-tt" id="tour-tt-smart" data-i18n="tour.smart.t">القياس الذكي</span>
+            <span class="tour-td" id="tour-td-smart" data-i18n="tour.smart.d">الملصق يُطبع مقصوصاً؟ الطابعة تقيس طوله الحقيقي، ويُضبط التصميم على المقاس الجديد بضغطة واحدة.</span>
+            <span class="tour-track" aria-hidden="true"><i></i></span>
+          </button>
+          <button class="tour-tab" type="button" role="tab" id="tour-tab-print" aria-controls="tour-panel-print" aria-selected="false" tabindex="-1" aria-labelledby="tour-tt-print" aria-describedby="tour-td-print">
+            <span class="tour-num" aria-hidden="true">05</span>
+            <span class="tour-tt" id="tour-tt-print" data-i18n="tour.print.t">نتائج الطباعة</span>
+            <span class="tour-td" id="tour-td-print" data-i18n="tour.print.d">أمثلة متحركة لشكل الملصقات بعد الطباعة: منتجات ورفوف وكراتين شحن وأصول، ثم جميعها جنباً إلى جنب بنِسَب مقاساتها الحقيقية.</span>
+            <span class="tour-track" aria-hidden="true"><i></i></span>
+          </button>
+        </div>
+
+        <div class="tour-main">
+          <div class="tour-stage">
+            <div class="tour-panel" role="tabpanel" id="tour-panel-excel" aria-labelledby="tour-tt-excel" tabindex="0" data-size-m="2.2 MB" data-dur="0:20" data-size="3.8 MB">
+              <video src="media/clips/excel.mp4" data-poster="media/clips/excel.jpg" data-src-m="media/clips/excel-m.mp4" data-poster-m="media/clips/excel-m.jpg" width="1920" height="1080" preload="none" muted playsinline controls disablepictureinpicture disableremoteplayback aria-labelledby="tour-tt-excel" aria-describedby="tour-alt-excel"></video>
+              <p class="sr-only" id="tour-alt-excel" data-i18n="tour.excel.alt">مقطع مدته 20 ثانية، بموسيقى هادئة. يُستورد الملف warehouse-supplies.xlsx وفيه 6,428 صفاً، ويملأ كل صف الملصق بدوره: السجل 1 ثم 2 ثم 3. قبل الطباعة تفحص نافذة الطباعة المهمة: الملصق مطابق، والعرض يناسب الطابعة، والباركودات تُقرأ بدقة 203 نقاط في البوصة. بعد الضغط على «Print 6,428 labels» يطلب البرنامج تأكيداً واحداً لأن المهمة كبيرة، ثم يعرض المقطع تقدّم الطباعة بتسريع زمني، مع زرّي Pause وStop.</p>
+            </div>
+            <div class="tour-panel" role="tabpanel" id="tour-panel-ai" aria-labelledby="tour-tt-ai" tabindex="0" data-size-m="1.8 MB" data-dur="0:26" data-size="2.9 MB" hidden>
+              <video data-src="media/clips/ai.mp4" data-poster="media/clips/ai.jpg" data-src-m="media/clips/ai-m.mp4" data-poster-m="media/clips/ai-m.jpg" width="1920" height="1080" preload="none" muted playsinline disablepictureinpicture disableremoteplayback aria-labelledby="tour-tt-ai" aria-describedby="tour-alt-ai"></video>
+              <p class="sr-only" id="tour-alt-ai" data-i18n="tour.ai.alt">مقطع مدته 26 ثانية، بموسيقى هادئة. يكتب المستخدم بالإنجليزية جملة واحدة يطلب فيها ملصق منتج فيه الاسم والسعر والباركود بمقاس 50 × 30 مم. يصمّم الملصقَ ذكاءٌ اصطناعي يعمل على جهاز المستخدم بدون إنترنت (نموذج Qwen3-VL 4B)، ويأتي التصميم مربوطاً بأعمدة Excel: Item Name وPrice وBarcode بصيغة EAN-13. ثم يطلب المستخدم في طلب ثانٍ تحويل الباركود إلى رمز QR، فيتحوّل. فترة انتظار النموذج مسرَّعة في المقطع ومكتوب عليها «Sped up».</p>
+            </div>
+            <div class="tour-panel" role="tabpanel" id="tour-panel-assistant" aria-labelledby="tour-tt-assistant" tabindex="0" data-size-m="3.1 MB" data-dur="0:31" data-size="5.0 MB" hidden>
+              <video data-src="media/clips/assistant.mp4" data-poster="media/clips/assistant.jpg" data-src-m="media/clips/assistant-m.mp4" data-poster-m="media/clips/assistant-m.jpg" width="1920" height="1080" preload="none" muted playsinline disablepictureinpicture disableremoteplayback aria-labelledby="tour-tt-assistant" aria-describedby="tour-alt-assistant"></video>
+              <p class="sr-only" id="tour-alt-assistant" data-i18n="tour.assistant.alt">مقطع مدته 31 ثانية، بموسيقى هادئة. يكتب المستخدم طلبات بالإنجليزية في شريط المساعد: تدوير الباركود فيُعاد ترتيب الملصق، ثم سؤال عن الطابعة التي ستُستخدم فيأتي الجواب من بيانات المهمة، ثم طلب طباعة الصفوف من 1 إلى 3 حسب عمود الكمية فتُفتح نافذة الطباعة جاهزة بـ 147 ملصقاً دون أن تبدأ الطباعة. بعدها يفتح إعدادات المساعد ويختار «نموذجك الخاص»: تظهر خيارات Claude وOpenAI وOpenRouter وGroq وهي تحتاج مفتاح API، ثم يختار Ollama الذي يعمل على هذا الجهاز بالنموذج qwen2.5:3b، فينجح الاتصال. ثم يطلب بصياغة لا تفهمها القواعد المدمجة إضافة مكان التخزين، فيفهمها النموذج المتصل ويضيف الموقع إلى الملصق. فترات الانتظار مسرَّعة في المقطع ومكتوب عليها «Sped up».</p>
+            </div>
+            <div class="tour-panel" role="tabpanel" id="tour-panel-smart" aria-labelledby="tour-tt-smart" tabindex="0" data-size-m="1.9 MB" data-dur="0:20" data-size="2.9 MB" hidden>
+              <video data-src="media/clips/smart.mp4" data-poster="media/clips/smart.jpg" data-src-m="media/clips/smart-m.mp4" data-poster-m="media/clips/smart-m.jpg" width="1920" height="1080" preload="none" muted playsinline disablepictureinpicture disableremoteplayback aria-labelledby="tour-tt-smart" aria-describedby="tour-alt-smart"></video>
+              <p class="sr-only" id="tour-alt-smart" data-i18n="tour.smart.alt">مقطع مدته 20 ثانية، بموسيقى هادئة. تُظهر رسوم متحركة ملصقاً مقاسه 50 × 30 مم يُطبع مقصوصاً لأن إعداد تعريف الطابعة في ويندوز هو 76.2 × 50.8 مم. في نافذة القياس الذكي يطلب المستخدم من الطابعة الحرارية طول الملصق الحقيقي، فيُقرأ عبر USB بلغة طابعات Zebra، وهو 30 مم. يكتب المستخدم العرض 50 ويضغط «Use 50 × 30»، فيُعاد ترتيب التصميم الذي أعدّه المساعد ليناسب الملصق دون تمطيط، ويُحفظ المقاس لهذه الطابعة. وفي النهاية تُظهر رسوم متحركة الملصق مطبوعاً كاملاً حتى حوافه.</p>
+            </div>
+            <div class="tour-panel" role="tabpanel" id="tour-panel-print" aria-labelledby="tour-tt-print" tabindex="0" data-size-m="1.4 MB" data-dur="0:18" data-size="1.9 MB" hidden>
+              <video data-src="media/clips/print.mp4" data-poster="media/clips/print.jpg" data-src-m="media/clips/print-m.mp4" data-poster-m="media/clips/print-m.jpg" width="1920" height="1080" preload="none" muted playsinline disablepictureinpicture disableremoteplayback aria-labelledby="tour-tt-print" aria-describedby="tour-alt-print"></video>
+              <p class="sr-only" id="tour-alt-print" data-i18n="tour.print.alt">مقطع مدته 18 ثانية، بموسيقى هادئة، وهو رسوم متحركة وليس تصويراً، مبني من ملصقات يرسمها البرنامج نفسه: لفة ملصقات تخرج من طابعة حرارية بملصق لكل صف في Excel، ثم معاينة الطباعة حيث ما تراه هو ما يُطبع، ثم ملصق منتج 50 × 30 مم بباركود EAN-13 على علبة، وملصق 100 × 50 مم للرفوف والصناديق برمز QR، وملصق شحن 100 × 150 مم على كرتونة، وملصقات أصول 60 × 30 مم برمز QR على حقيبة عُدّة، وأخيراً جميعها جنباً إلى جنب بنِسَب مقاساتها الحقيقية.</p>
+            </div>
+            <button class="tour-sound" type="button" aria-pressed="false" hidden>
+              <svg class="i-mute" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 6h2.2L8 3.2v9.6L4.7 10H2.5z" fill="currentColor" stroke="none"/><path d="m11 6.2 3.2 3.6M14.2 6.2 11 9.8"/></svg>
+              <svg class="i-sound" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 6h2.2L8 3.2v9.6L4.7 10H2.5z" fill="currentColor" stroke="none"/><path d="M10.6 5.6a3.3 3.3 0 0 1 0 4.8M12.6 3.8a6 6 0 0 1 0 8.4"/></svg>
+              <span class="sr-only" data-i18n="tour.sound">الصوت</span>
+            </button>
+            <button class="tour-play" type="button" data-state="play" hidden>
+              <svg class="i-play" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M4.5 2.8v10.4a.6.6 0 0 0 .9.5l8.3-5.2a.6.6 0 0 0 0-1L5.4 2.3a.6.6 0 0 0-.9.5z"/></svg>
+              <svg class="i-pause" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="3.5" y="2.5" width="3" height="11" rx=".8"/><rect x="9.5" y="2.5" width="3" height="11" rx=".8"/></svg>
+              <span class="tour-time">0:20</span>
+              <span class="sr-only" data-i18n="tour.play">تشغيل الفيديو</span>
+              <span class="sr-only" data-i18n="tour.pause" hidden>إيقاف الفيديو مؤقتاً</span>
+            </button>
+          </div>
+          <div class="tour-caps" aria-hidden="true">
+            <div class="tour-cap on">
+              <p class="tour-cap-d" data-i18n="tour.excel.d">كل صف في الملف يملأ ملصقاً، ونافذة الطباعة تفحص المهمة قبل أن تبدأ، مع إيقاف مؤقت أو تام أثناءها.</p>
+              <p class="tour-cap-n" data-i18n="tour.excel.n">تقدّم الطباعة في المقطع معروض بتسريع زمني.</p>
+            </div>
+            <div class="tour-cap">
+              <p class="tour-cap-d" data-i18n="tour.ai.d">صِف الملصق بجملة واحدة، فيصمّمه ذكاء اصطناعي يعمل على جهازك ويربطه بأعمدة Excel.</p>
+              <p class="tour-cap-n" data-i18n="tour.ai.n">النموذج Qwen3-VL 4B (نحو 2.3 جيجابايت يُنزَّل مرة واحدة من داخل البرنامج) يعمل بعدها على جهازك بدون إنترنت، ووقت انتظاره مُسرَّع في المقطع.</p>
+            </div>
+            <div class="tour-cap">
+              <p class="tour-cap-d" data-i18n="tour.assistant.d">اطلب بكلمات عادية: يعيد ترتيب الملصق، ويجيب من بيانات المهمة، ويجهّز الطباعة. ويمكنك ربط نموذج ذكاء اصطناعي خاص بك.</p>
+              <p class="tour-cap-n" data-i18n="tour.assistant.n">الطلبات الثلاثة الأولى تنفّذها القواعد المدمجة. النموذج الخاص معروض عبر Ollama على هذا الجهاز، والخدمات السحابية تحتاج مفتاح API خاصاً بك. فترات الانتظار مسرَّعة.</p>
+            </div>
+            <div class="tour-cap">
+              <p class="tour-cap-d" data-i18n="tour.smart.d">الملصق يُطبع مقصوصاً؟ الطابعة تقيس طوله الحقيقي، ويُضبط التصميم على المقاس الجديد بضغطة واحدة.</p>
+              <p class="tour-cap-n" data-i18n="tour.smart.n">يُقرأ الطول عبر USB من طابعة حرارية بلغة Zebra، ويُحفظ المقاس لهذه الطابعة. التصاميم التي يعدّها المساعد ولم تُعدَّل يدوياً يُعاد ترتيبها دون تمطيط، أما التصاميم اليدوية أو المعدَّلة يدوياً فتتغيّر أحجام عناصرها لتناسب المقاس.</p>
+            </div>
+            <div class="tour-cap">
+              <p class="tour-cap-d" data-i18n="tour.print.d">أمثلة متحركة لشكل الملصقات بعد الطباعة: منتجات ورفوف وكراتين شحن وأصول، ثم جميعها جنباً إلى جنب بنِسَب مقاساتها الحقيقية.</p>
+              <p class="tour-cap-n" data-i18n="tour.print.n">رسوم متحركة مبنية من تصاميم البرنامج نفسه، وليست تصويراً لطباعة فعلية.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -310,6 +496,31 @@
       'dl.title': 'Download', 'dl.sub': 'One installer for Windows 10 and 11 (64-bit). It installs for the current user and needs no administrator rights.',
       'dl.noteT': 'On first launch:', 'dl.noteD': 'Windows may show a SmartScreen warning because the file is new and not yet digitally signed. Click "More info", then "Run anyway".',
       'foot.made': 'Made by', 'rel.latest': 'latest',
+      'nav.videos': 'Videos',
+      'tour.title': 'See it at work',
+      'tour.sub': 'Five short clips with calm music, from an Excel file to the printed label. Sound stays off until you turn it on.',
+      'tour.play': 'Play video', 'tour.pause': 'Pause video',
+      'tour.excel.t': 'Excel to labels',
+      'tour.excel.d': 'Every row in the file fills a label, the print dialog checks the job before it starts, and you can pause or stop while it runs.',
+      'tour.excel.n': 'The print progress in the clip is a time-lapse.',
+      'tour.excel.alt': 'Clip, 20 seconds, with calm music. The file warehouse-supplies.xlsx with 6,428 rows is imported, and every row fills the label in turn: record 1, 2, 3 and so on. Before printing, the print dialog checks the job: the sticker matches, the width fits the printer, and the barcodes scan at 203 dpi. After “Print 6,428 labels”, the app asks once to confirm the large job; a time-lapse then shows the print progress, with Pause and Stop.',
+      'tour.ai.t': 'AI label designer',
+      'tour.ai.d': 'Describe the label in one sentence. An AI on your own PC designs it and links it to your Excel columns.',
+      'tour.ai.n': 'The model, Qwen3-VL 4B (about 2.3 GB, downloaded once from inside the app), then runs offline on your PC. Its wait is sped up in the clip.',
+      'tour.ai.alt': 'Clip, 26 seconds, with calm music. The user types one sentence: “A product label with name, price and barcode, 50 x 30 mm”. An AI that runs offline on the user’s own PC (Qwen3-VL 4B) designs the label, already linked to the Excel columns Item Name, Price and Barcode (EAN-13). A second request, “Convert the barcode to QR”, changes the barcode to a QR code. The model’s wait is sped up in the clip and marked “Sped up”.',
+      'tour.assistant.t': 'AI assistant',
+      'tour.assistant.d': 'Ask in plain English: it re-arranges the label, answers from the job’s facts and sets up the print. Connect your own AI model if you like.',
+      'tour.assistant.n': 'The first three requests run on the built-in rules. Your own model is shown with Ollama on this PC; cloud providers need your own API key. Waits are sped up.',
+      'tour.assistant.alt': 'Clip, 31 seconds, with calm music. The user types requests in English in the assistant bar: rotate the barcode, and the label is re-arranged; which printer will be used, answered from the job’s facts; print rows 1 to 3 by quantity, and the print dialog opens filled in with 147 labels, without printing. Then the assistant settings switch to “Your own model”: Claude, OpenAI, OpenRouter and Groq are listed and need an API key; Ollama, running on this PC with qwen2.5:3b, is chosen and the connection check succeeds. A request the built-in rules do not understand, “Add where it is stored”, is then understood by the connected model, which adds the location to the label. Waits are sped up in the clip and marked “Sped up”.',
+      'tour.sound': 'Sound',
+      'tour.smart.t': 'Smart size',
+      'tour.smart.d': 'Labels printing cut off? The printer measures the real length, and one click fits the design to the new size.',
+      'tour.smart.n': 'The length is read over USB from a Zebra-language thermal printer and remembered for that printer. Designs made by the assistant and never edited by hand are re-arranged, not stretched; designs made or edited by hand are scaled to fit.',
+      'tour.smart.alt': 'Clip, 20 seconds, with calm music. An animation shows a 50 × 30 mm label printing cut off because the Windows driver is set to 76.2 × 50.8 mm. In the Smart size dialog, the user asks the thermal printer for the real label length; it is read over USB in the Zebra printer language: 30 mm. The user types the width, 50, and clicks “Use 50 × 30”. The design, made by the assistant, is re-arranged to fit, not stretched, and the size is remembered for that printer. Finally an animation shows the label printing edge to edge.',
+      'tour.print.t': 'Printed results',
+      'tour.print.d': 'Animated examples of how the labels come out: products, shelves, shipping cartons and assets, then all of them side by side at true scale.',
+      'tour.print.n': 'Animated from the app’s own label designs, not filmed on a real printer.',
+      'tour.print.alt': 'Clip, 18 seconds, with calm music, an animation rather than a recording, built from labels drawn by the app itself: a roll feeds from a thermal printer with one label per Excel row; the print preview shows that what you see is what prints; then a 50 × 30 mm product label with an EAN-13 barcode on a box, a 100 × 50 mm bin and shelf label with a QR code, a 100 × 150 mm carton shipping label, and 60 × 30 mm QR asset tags on a tool case; finally all of them side by side at true scale.',
     },
     ar: {
       'rel.latest': 'الأحدث',
@@ -358,6 +569,270 @@
   const bars = document.getElementById('bars');
   let seed = 7;
   for (let i = 0; i < 46; i++) { seed = (seed * 9301 + 49297) % 233280; const w = 1 + (seed % 3); bars.insertAdjacentHTML('beforeend', `<i style="width:${w}px;margin-right:${(seed >> 3) % 2}px"></i>`); }
+
+  /* ---- see it at work: one player, five short clips (sound off until asked), tabs that advance on their own ---- */
+  (() => {
+    const box = document.getElementById('tour-box');
+    if (!box) return;
+    const list = box.querySelector('[role="tablist"]');
+    const tabs = Array.from(list.querySelectorAll('[role="tab"]'));
+    const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
+    const vids = panels.map((panel) => panel.querySelector('video'));
+    // phones get the 4:5 cut of each clip: its captions and close-ups are made for a narrow screen. Chosen once, at load.
+    if (window.matchMedia && window.matchMedia('(max-width: 600px)').matches) {
+      box.classList.add('is-tall');
+      vids.forEach((v) => {
+        if (v.getAttribute('src')) v.setAttribute('src', v.dataset.srcM); else v.dataset.src = v.dataset.srcM;
+        if (v.getAttribute('poster')) v.setAttribute('poster', v.dataset.posterM); else v.dataset.poster = v.dataset.posterM;
+        v.width = 1080;
+        v.height = 1350;
+      });
+      panels.forEach((p) => { p.dataset.size = p.dataset.sizeM; });
+    }
+    const srcs = vids.map((v) => v.getAttribute('src') || v.dataset.src);
+    const fills = tabs.map((tab) => tab.querySelector('.tour-track i'));
+    const caps = Array.from(box.querySelectorAll('.tour-cap')); // same order as the tabs
+    const stage = box.querySelector('.tour-stage');
+    const btn = stage.querySelector('.tour-play');
+    const time = btn.querySelector('.tour-time');
+    const soundBtn = stage.querySelector('.tour-sound');
+    let sound = false; // the visitor turned the sound on
+    const sayPlay = btn.querySelector('[data-i18n="tour.play"]');
+    const sayPause = btn.querySelector('[data-i18n="tour.pause"]');
+    const mq = (q) => (window.matchMedia ? window.matchMedia(q) : { matches: false });
+    const mqReduce = mq('(prefers-reduced-motion: reduce)');
+    const mqWide = mq('(min-width: 1000px)');
+    const net = navigator.connection || {};
+    const saveData = !!net.saveData || /(^|-)2g$/.test(net.effectiveType || '');
+    const hasIO = 'IntersectionObserver' in window;
+    let auto = hasIO && !mqReduce.matches && !saveData; // may clips start, and advance, by themselves?
+    let wanted = auto;     // should the player be playing: autoplay, or the visitor pressed play
+    let shown = !hasIO;    // enough of the player is on screen (60% to start, under 30% to stop)
+    let ratio = 0;         // how much of the player is on screen right now
+    let vis0 = 0;          // the last visibility measured: scrolling in must not hide a player the visitor started
+    let cur = Math.max(0, tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true'));
+    let raf = 0;
+    let timer = 0;
+
+    const listen = (m, fn) => { if (m.addEventListener) m.addEventListener('change', fn); else if (m.addListener) m.addListener(fn); };
+    const setPoster = (v) => { if (v.dataset.poster) { v.poster = v.dataset.poster; delete v.dataset.poster; } };
+    const live = () => wanted && shown && !document.hidden;
+    // keyboard focus inside the tour: rotation stops there (a focused panel must not disappear under the visitor)
+    const kbFocusIn = () => {
+      const a = document.activeElement;
+      if (!a || a === document.body || !box.contains(a)) return false;
+      try { return a.matches(':focus-visible'); } catch (e) { return true; }
+    };
+
+    function render() {
+      const on = live();
+      btn.dataset.state = on ? 'pause' : 'play';
+      sayPlay.hidden = on;
+      sayPause.hidden = !on;
+      time.textContent = (saveData ? panels[cur].dataset.size : panels[cur].dataset.dur) || '';
+    }
+
+    function prefetch(i) {
+      const v = vids[i];
+      if (v.preload === 'auto') return;
+      v.preload = 'auto';
+      setPoster(v);
+      if (v.getAttribute('src')) { try { v.load(); } catch (e) { /* not fatal */ } } else v.src = srcs[i];
+    }
+
+    function paint() {
+      const v = vids[cur];
+      const r = v.duration ? Math.min(1, v.currentTime / v.duration) : 0;
+      fills[cur].style.transform = `scaleX(${r})`;
+      if (auto && wanted && r > 0.5 && cur < vids.length - 1 && !kbFocusIn()) prefetch(cur + 1); // the next clip is ready when this one ends
+    }
+
+    function tick() {
+      cancelAnimationFrame(raf);
+      const step = () => {
+        paint();
+        raf = !vids[cur].paused && !vids[cur].ended ? requestAnimationFrame(step) : 0;
+      };
+      raf = requestAnimationFrame(step);
+    }
+
+    function start(i) {
+      const v = vids[i];
+      v.preload = 'auto';
+      setPoster(v);
+      if (!v.getAttribute('src')) v.src = srcs[i];
+      v.muted = !sound;
+      let p = null;
+      try { p = v.play(); } catch (e) { p = null; }
+      if (p && p.catch) {
+        p.catch((err) => {
+          if (err && err.name === 'AbortError') return; // interrupted by our own pause() or load(): not a failure
+          if (v !== vids[cur]) return;
+          if (err && err.name === 'NotAllowedError' && !v.muted) {
+            // sound needs a fresh tap here (an automatic move to the next clip): carry on muted, show the sound as off
+            sound = false;
+            applySound();
+            if (live()) start(cur); // now muted: start() ignores aborted plays and clips that are no longer current
+            return;
+          }
+          wanted = false; // blocked (iOS Low Power Mode, a browser setting) or failed: show the play button
+          render();
+        });
+      }
+    }
+
+    function sync() {
+      clearTimeout(timer);
+      const v = vids[cur];
+      const go = live();
+      if (go && v.paused) start(cur);
+      else if (!go && !v.paused) v.pause();
+      render();
+    }
+    function later(ms) { clearTimeout(timer); timer = setTimeout(sync, ms); }
+
+    // back to the poster (a paused video at 0 s shows its first frame, which is blank). Dropping the source also
+    // stops any download still running; load() with the source kept would make Chrome buffer the clip again.
+    function reset(i) {
+      const v = vids[i];
+      if (!v.paused) v.pause();
+      fills[i].style.transform = 'scaleX(0)';
+      if (v.getAttribute('src')) {
+        v.removeAttribute('src');
+        v.preload = 'none';
+        try { v.load(); } catch (e) { /* not fatal */ }
+      }
+    }
+
+    function select(i, delay) {
+      if (i === cur) return;
+      const refocus = panels[cur].contains(document.activeElement); // the panel is about to be hidden: keep focus in the player
+      tabs[cur].setAttribute('aria-selected', 'false');
+      tabs[cur].tabIndex = -1;
+      panels[cur].hidden = true;
+      if (caps[cur]) caps[cur].classList.remove('on');
+      cur = i;
+      tabs[i].setAttribute('aria-selected', 'true');
+      tabs[i].tabIndex = 0;
+      panels[i].hidden = false;
+      if (refocus) panels[i].focus({ preventScroll: true });
+      if (caps[i]) caps[i].classList.add('on');
+      setPoster(vids[i]);
+      vids.forEach((v, j) => { if (j !== i) reset(j); });
+      if (delay) { render(); later(delay); } else sync(); // no delay: play() runs inside the click, which iOS needs
+    }
+
+    function toggle() {
+      if (live()) {
+        wanted = false;
+        clearTimeout(timer);
+        vids[cur].pause();
+        render();
+        return;
+      }
+      wanted = true;
+      if (ratio > 0) shown = true; // the visitor asked: a partly visible player is enough
+      sync();
+    }
+
+    vids.forEach((v, i) => {
+      v.removeAttribute('controls'); // kept in the markup only for visitors without JavaScript
+      v.muted = true;
+      v.defaultMuted = true;
+      v.addEventListener('play', () => { if (i === cur) tick(); });
+      v.addEventListener('timeupdate', () => { if (i === cur) paint(); });
+      v.addEventListener('pause', () => {
+        if (i !== cur) return;
+        // a pause the page did not make (the browser or the system stopped it): show the play button
+        if (live() && !v.ended) wanted = false;
+        render();
+      });
+      v.addEventListener('ended', () => {
+        if (i !== cur) return;
+        // the tour plays through once (01 to 04) and stops on the last end card; the play button or a tab starts it again
+        if (auto && wanted && cur < vids.length - 1 && !kbFocusIn()) select(cur + 1, 0);
+        else { wanted = false; render(); } // one clip per press: stop on the end card
+      });
+      v.addEventListener('error', () => {
+        if (i === cur && v.getAttribute('src')) { wanted = false; render(); }
+      });
+    });
+
+    tabs.forEach((tab, i) => tab.addEventListener('click', () => {
+      if (auto) { wanted = true; if (ratio > 0) shown = true; } // choosing a clip means: show it
+      if (i === cur) sync(); else select(i, 0);
+    }));
+
+    list.addEventListener('keydown', (e) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      const at = tabs.indexOf(document.activeElement);
+      if (at < 0) return;
+      const rtl = getComputedStyle(list).direction === 'rtl';
+      const n = tabs.length;
+      let to;
+      switch (e.key) {
+        case 'ArrowDown': to = at + 1; break;
+        case 'ArrowUp': to = at - 1; break;
+        case 'ArrowRight': to = rtl ? at - 1 : at + 1; break;
+        case 'ArrowLeft': to = rtl ? at + 1 : at - 1; break;
+        case 'Home': to = 0; break;
+        case 'End': to = n - 1; break;
+        default: return;
+      }
+      e.preventDefault();
+      to = (to + n) % n;
+      tabs[to].focus();
+      select(to, 350); // a short wait, so arrowing through the tabs does not start every clip
+    });
+
+    function applySound() {
+      vids.forEach((v) => { v.muted = !sound; });
+      soundBtn.setAttribute('aria-pressed', String(sound));
+    }
+    soundBtn.addEventListener('click', () => {
+      sound = !sound;
+      applySound();
+      if (sound && !live()) toggle(); // turning the sound on means: play it
+    });
+    btn.addEventListener('click', toggle);
+    stage.addEventListener('click', (e) => { if (e.target.tagName === 'VIDEO') toggle(); });
+    document.addEventListener('visibilitychange', sync);
+
+    if (hasIO) {
+      const header = document.querySelector('header');
+      const top = header ? header.offsetHeight : 0;
+      new IntersectionObserver((entries) => {
+        const en = entries[entries.length - 1];
+        ratio = en.isIntersecting ? en.intersectionRatio : 0;
+        const vis = !en.isIntersecting ? 0 : en.rootBounds ? en.intersectionRect.height / Math.max(1, Math.min(en.boundingClientRect.height, en.rootBounds.height)) : en.intersectionRatio;
+        const was = shown;
+        if (vis >= 0.6) shown = true;
+        else if (vis < 0.3 && (vis < vis0 || !en.isIntersecting)) shown = false;
+        vis0 = vis;
+        if (shown && !was) later(300); // a short wait, so scrolling past does not start a download
+        else if (!shown && was) sync();
+      }, { rootMargin: `-${top}px 0px 0px 0px`, threshold: Array.from({ length: 21 }, (_, k) => k / 20) }).observe(stage);
+      new IntersectionObserver((entries, io) => {
+        if (!entries.some((en) => en.isIntersecting)) return;
+        vids.forEach(setPoster); // the other posters load only when the section is near
+        io.disconnect();
+      }, { rootMargin: '600px 0px' }).observe(box);
+    } else {
+      vids.forEach(setPoster);
+    }
+
+    listen(mqReduce, () => {
+      auto = hasIO && !mqReduce.matches && !saveData;
+      if (!auto) wanted = false;
+      sync();
+    });
+    const orient = () => list.setAttribute('aria-orientation', mqWide.matches ? 'vertical' : 'horizontal');
+    listen(mqWide, orient);
+    orient();
+    btn.hidden = false;
+    soundBtn.hidden = false;
+    render();
+  })();
 
   apply();
   load();
